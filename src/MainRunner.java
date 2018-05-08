@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -10,41 +11,56 @@ import java.util.Scanner;
 public class MainRunner {
 
     public static void main(String args[]) {
-        Scanner input = new Scanner (System.in);
-        System.out.println("How many reactants are there?");
-        int reactantNumber = input.nextInt();
-        for (int i = 0; i < reactantNumber; i++) {
-            reactants(input, reactantNumber);
-        }
-        System.out.println("How many products are there?");
-        int productNumber = input.nextInt();
-        products(input, productNumber);
+        Scanner input = new Scanner(System.in);
+        System.out.println("Type in the Reactants");
+        String reactants = input.next();
+        reactants(reactants);
+        System.out.println("Type in the Products");
+        String products = input.next();
     }
 
-    public static void reactants(Scanner input, int reactantNumber) {
-        for (int i = 0; i < reactantNumber; i++) {
-            if (i == 0) {
-                Compound reactant1 = compoundGenerator(input);
-                i++;
-            } else if (i == 1) {
-                Compound reactant2 = compoundGenerator(input);
-                i++;
-            } else if (i == 2) {
-                Compound reactant3 = compoundGenerator(input);
-                i++;
-            } else if (i == 3) {
-                Compound reactant4 = compoundGenerator(input);
-                i++;
-            } else if (i == 4) {
-                Compound reactant5 = compoundGenerator(input);
-                i++;
-            } else {
-                System.out.println("I'm broken! Fix me!");
-            }
-        }
+    public static void reactants(String reactants) {
+        System.out.println(compoundBuilder(reactants));
     }
 
-    public static void products(Scanner input, int productNumber){
+    public static Compound compoundBuilder(String compound) {
+        String a = "";
+        int e = 0;
+        ArrayList<Element> eleList = new ArrayList<>();
+        Element temp = new Element(null, 0);
+        int i = 0;
+        while (i < compound.length()) {
+            boolean check = true;
+            int j = i;
+                if ((Character.isUpperCase(compound.charAt(j)))) {
+                    do {
+                        if (Character.isUpperCase(compound.charAt(j+1)) || isInteger(compound.substring(j+1,j+2))) {
+                            a = compound.substring(i, j+1);
+                            check = false;
+                        }
+                        j++;
+                        if (j > compound.length()) {
+                            check = false;
+                        }
+                    } while (check);
+                }
+            int k = 0;
+            do {
+                if (isInteger(a.substring(k, k + 1))) {
+                    e = Integer.parseInt(a.substring(k, k + 1));
+                } else {
+                    k++;
+                }
+            } while (k < a.length());
+            temp.setName(a);
+            temp.setAmount(e);
+            eleList.add(temp);
+            i += a.length();
+        }
+        return new Compound(eleList);
+    }
+    /**
+    public static void products(String productNumber){
         for (int i = 0; i < productNumber; i++) {
             if (i == 0) {
                 Compound product1 = compoundGenerator(input);
@@ -77,9 +93,9 @@ public class MainRunner {
         Element element4 = new Element(null, -1);
         Element element5 = new Element(null, -1);
         for (int i = 0; i <= elementNumber; i++) {
-            System.out.println("What is the element's name?");
+            System.out.print("What is the element's name?");
             String tempElementName = input.next();
-            System.out.println("How many are in the compound?");
+            System.out.print("How many are in the compound?");
             int tempElementAmount = input.nextInt();
             if (i == 0) {
                 element1.setName(tempElementName);
@@ -114,5 +130,20 @@ public class MainRunner {
         } else if (elementNumber == 5) {
             return new Compound(CompoundName, element1, element2, element3, element4, element5);
         } else return null;
+
+     }
+    **/
+
+    public static boolean isInteger(String s) {
+        boolean isValidInteger = false;
+        try {
+            Integer.parseInt(s);
+            // s is a valid integer
+            isValidInteger = true;
+        }
+        catch (NumberFormatException ex) {
+            // s is not an integer
+        }
+        return isValidInteger;
     }
 }

@@ -25,4 +25,9 @@ public class Element {
     public int setAmount (int amount) {
         return amount;
     }
+
+    @Override
+    public String toString() {
+        return (name + amount).toString();
+    }
 }
