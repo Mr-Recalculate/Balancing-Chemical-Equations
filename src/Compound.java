@@ -12,15 +12,22 @@ public class Compound {
 
     private List<Element> elements = new ArrayList<>();
 
-    public Compound(ArrayList<Element> elements) {
-        this.elements = elements;
+    public Compound() {
     }
+
     public void addElement(Element ele) {
         elements.add(ele);
+    }
+    public void setElement(int idx, Element ele) {
+        elements.set(idx, ele);
+    }
+
+    public Element getElement(int idx) {
+        return elements.get(idx);
     }
 
     @Override
     public String toString() {
-        return this.elements.toString();
+        return elements.toString();
     }
 }

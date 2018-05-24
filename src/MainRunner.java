@@ -15,6 +15,24 @@ public class MainRunner {
         System.out.println("Type in the Reactants");
         String reactants = input.next();
         reactants(reactants);
+        System.out.println("Type in the Reactants");
+        reactants = input.next();
+        reactants(reactants);
+        System.out.println("Type in the Reactants");
+        reactants = input.next();
+        reactants(reactants);
+        System.out.println("Type in the Reactants");
+        reactants = input.next();
+        reactants(reactants);
+        System.out.println("Type in the Reactants");
+        reactants = input.next();
+        reactants(reactants);
+        System.out.println("Type in the Reactants");
+        reactants = input.next();
+        reactants(reactants);
+        System.out.println("Type in the Reactants");
+        reactants = input.next();
+        reactants(reactants);
         System.out.println("Type in the Products");
         String products = input.next();
     }
@@ -24,40 +42,79 @@ public class MainRunner {
     }
 
     public static Compound compoundBuilder(String compound) {
-        String a = "";
-        int e = 0;
-        ArrayList<Element> eleList = new ArrayList<>();
-        Element temp = new Element(null, 0);
+        if (compound.indexOf("(") > 0) {
+            compound = paraFormatter(compound);
+        }
+        String eName = "";
+        Compound eleList = new Compound();
+        int eAmount;
         int i = 0;
         while (i < compound.length()) {
-            boolean check = true;
-            int j = i;
-                if ((Character.isUpperCase(compound.charAt(j)))) {
-                    do {
-                        if (Character.isUpperCase(compound.charAt(j+1)) || isInteger(compound.substring(j+1,j+2))) {
-                            a = compound.substring(i, j+1);
-                            check = false;
+            eAmount = 0;
+            int j = i+1;
+            if (Character.isUpperCase(compound.charAt(i))) {
+                if (i != compound.length()-1) {
+                    if (Character.isLowerCase(compound.charAt(j)) || isInteger(compound.substring(j, j + 1))) {
+                        if (i != compound.length() - 2) {
+                            if (isInteger(compound.substring(j + 1, j + 2))) {
+                                j += 2;
+                            } else {
+                                j++;
+                            }
+                        } else {
+                            j++;
                         }
-                        j++;
-                        if (j > compound.length()) {
-                            check = false;
-                        }
-                    } while (check);
+                    }
                 }
+                eName = compound.substring(i, j);
+            }
+            i += eName.length();
             int k = 0;
             do {
-                if (isInteger(a.substring(k, k + 1))) {
-                    e = Integer.parseInt(a.substring(k, k + 1));
+                if (isInteger(eName.substring(k, k + 1))) {
+                    eAmount = Integer.parseInt(eName.substring(k, k + 1));
+                    eName = eName.substring(0, eName.length()-1);
+                    k++;
                 } else {
                     k++;
                 }
-            } while (k < a.length());
-            temp.setName(a);
-            temp.setAmount(e);
-            eleList.add(temp);
-            i += a.length();
+            } while (k < eName.length());
+            if (eAmount == 0) {
+                eAmount = 1;
+            }
+            eleList.addElement(new Element(eName, eAmount));
         }
-        return new Compound(eleList);
+        return eleList;
+    }
+
+    public static String paraFormatter(String compound) {
+        int paraF = compound.indexOf("(");
+        int paraB = compound.indexOf(")");
+        int multiplier = Integer.parseInt(compound.substring(paraB+1, paraB+2));
+        String formatted = "";
+        if (paraF > 0) {
+            formatted += compound.substring(0,paraF);
+        }
+        for (int i = paraF; i <= paraB+1-paraF; i++) {
+            if (Character.isUpperCase(compound.charAt(i))) {
+                if (isInteger(compound.substring(i+1, i+2))) {
+                    formatted += compound.substring(i,i+1) + Integer.toString (Integer.parseInt(compound.substring(i+1,i+2))*multiplier);
+                } else if (Character.isLowerCase(compound.charAt(i+1))) {
+                    if (isInteger(compound.substring(i+2, i+3))) {
+                        formatted += compound.substring(i,i+2) + Integer.toString(Integer.parseInt(compound.substring(i+2,i+3))*multiplier);
+                    } else {
+                        formatted += compound.substring(i,i+2) + Integer.toString(multiplier);
+                    }
+                } else {
+                    formatted += compound.substring(i,i+1) + Integer.toString(multiplier);
+                }
+
+            }
+        }
+        if (paraB != compound.length()-1) {
+            formatted += compound.substring(paraB+2);
+        }
+    return formatted;
     }
     /**
     public static void products(String productNumber){

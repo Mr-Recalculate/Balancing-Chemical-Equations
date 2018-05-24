@@ -16,18 +16,18 @@ public class Element {
     public String getName () {
         return this.name;
     }
-    public String setName (String name) {
-        return name;
+    public void setName (String name) {
+        this.name = name;
     }
     public int getAmount () {
         return this.amount;
     }
-    public int setAmount (int amount) {
-        return amount;
+    public void setAmount (int amount) {
+        this.amount = amount;
     }
 
     @Override
     public String toString() {
-        return (name + amount).toString();
+        return "name: " + name + "| amount: " + amount;
     }
 }
