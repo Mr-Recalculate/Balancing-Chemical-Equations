@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -13,36 +14,51 @@ public class MainRunner {
     public static void main(String args[]) {
         Scanner input = new Scanner(System.in);
         System.out.println("Type in the Reactants");
-        String reactants = input.next();
+        String reactants = input.nextLine();
         reactants(reactants);
         System.out.println("Type in the Reactants");
-        reactants = input.next();
-        reactants(reactants);
-        System.out.println("Type in the Reactants");
-        reactants = input.next();
-        reactants(reactants);
-        System.out.println("Type in the Reactants");
-        reactants = input.next();
-        reactants(reactants);
-        System.out.println("Type in the Reactants");
-        reactants = input.next();
-        reactants(reactants);
-        System.out.println("Type in the Reactants");
-        reactants = input.next();
-        reactants(reactants);
-        System.out.println("Type in the Reactants");
-        reactants = input.next();
+        reactants = input.nextLine();
+        reactants(reactants);  System.out.println("Type in the Reactants");
+        reactants = input.nextLine();
+        reactants(reactants);  System.out.println("Type in the Reactants");
+        reactants = input.nextLine();
         reactants(reactants);
         System.out.println("Type in the Products");
         String products = input.next();
     }
 
     public static void reactants(String reactants) {
-        System.out.println(compoundBuilder(reactants));
+        List<Compound> reactantList = new ArrayList();
+        if (reactants.indexOf("+") == -1){
+            reactantList.add(compoundBuilder(reactants));
+        } else {
+            int i = 0;
+            while (i < reactants.length()){
+                if (reactants.substring(i).indexOf("+") != -1) {
+                    int j = reactants.indexOf("+", i);
+                    if (j == -1) {
+                        throw new IllegalArgumentException("j is negative one");
+                    }
+                    reactantList.add(compoundBuilder(reactants.substring(i, j)));
+                    i += reactants.substring(i).indexOf("+") + 1;
+                } else {
+                    reactantList.add(compoundBuilder(reactants.substring(i)));
+                    i = reactants.length();
+                }
+            }
+            //reactantList.add(compoundBuilder(reactants.substring(reactants.indexOf("+")+1)));
+        }
+        System.out.println(reactantList);
     }
 
     public static Compound compoundBuilder(String compound) {
-        if (compound.indexOf("(") > 0) {
+        while (compound.substring(0,1).equals(" ")) {
+            compound = compound.substring(1);
+        }
+        while (compound.substring(compound.length()-1).equals(" ")) {
+            compound = compound.substring(0, compound.length()-1);
+        }
+        if (compound.indexOf("(") > -1) {
             compound = paraFormatter(compound);
         }
         String eName = "";
@@ -90,7 +106,10 @@ public class MainRunner {
     public static String paraFormatter(String compound) {
         int paraF = compound.indexOf("(");
         int paraB = compound.indexOf(")");
-        int multiplier = Integer.parseInt(compound.substring(paraB+1, paraB+2));
+        int multiplier = 1;
+        if (isInteger(compound.substring(paraB + 1, paraB + 2))) {
+            multiplier = Integer.parseInt(compound.substring(paraB + 1, paraB + 2));
+        }
         String formatted = "";
         if (paraF > 0) {
             formatted += compound.substring(0,paraF);
