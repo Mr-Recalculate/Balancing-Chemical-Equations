@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="javadoc1">
+    <CLASSES />
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../jlinalg_0.7.zip!/JLinAlg/javadoc" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../jlinalg_0.7.zip!/JLinAlg/src/demo/java" />
+      <root url="jar://$PROJECT_DIR$/../../jlinalg_0.7.zip!/JLinAlg/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../jlinalg_0.7.zip!/JLinAlg/src/test/java" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import org.jlinalg.LinSysSolver;
+import org.jlinalg.Matrix;
+import org.jlinalg.Vector;
+import org.jlinalg.rational.Rational;
 
 /**
  * Gabriel Young
@@ -16,15 +20,10 @@ public class MainRunner {
         System.out.println("Type in the Reactants");
         String reactants = input.nextLine();
         reactants(reactants);
-        System.out.println("Type in the Reactants");
-        reactants = input.nextLine();
-        reactants(reactants);  System.out.println("Type in the Reactants");
-        reactants = input.nextLine();
-        reactants(reactants);  System.out.println("Type in the Reactants");
-        reactants = input.nextLine();
-        reactants(reactants);
         System.out.println("Type in the Products");
-        String products = input.next();
+        String products = input.nextLine();
+        products(products);
+
     }
 
     public static void reactants(String reactants) {
@@ -46,9 +45,31 @@ public class MainRunner {
                     i = reactants.length();
                 }
             }
-            //reactantList.add(compoundBuilder(reactants.substring(reactants.indexOf("+")+1)));
         }
         System.out.println(reactantList);
+    }
+
+    public static void products(String products) {
+        List<Compound> productList = new ArrayList();
+        if (products.indexOf("+") == -1) {
+            productList.add(compoundBuilder(products));
+        } else {
+            int i = 0;
+            while (i < products.length()) {
+                if (products.substring(i).indexOf("+") != -1) {
+                    int j = products.indexOf("+", i);
+                    if (j == -1) {
+                        throw new IllegalArgumentException("j is negative one");
+                    }
+                    productList.add(compoundBuilder(products.substring(i, j)));
+                    i += products.substring(i).indexOf("+") + 1;
+                } else {
+                    productList.add(compoundBuilder(products.substring(i)));
+                    i = products.length();
+                }
+            }
+        }
+        System.out.println(productList);
     }
 
     public static Compound compoundBuilder(String compound) {
