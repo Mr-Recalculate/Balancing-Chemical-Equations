@@ -1,6 +1,6 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.lang.reflect.Array;
+import java.util.*;
+
 import org.jlinalg.LinSysSolver;
 import org.jlinalg.Matrix;
 import org.jlinalg.Vector;
@@ -18,16 +18,26 @@ public class MainRunner {
     public static void main(String args[]) {
         Scanner input = new Scanner(System.in);
         System.out.println("Type in the Reactants");
-        String reactants = input.nextLine();
-        reactants(reactants);
+        ArrayList<Compound> reactants = reactants(input.nextLine());
+        Compound eleList = eleList(reactants);
         System.out.println("Type in the Products");
-        String products = input.nextLine();
-        products(products);
-
+        ArrayList<Compound> products = products(input.nextLine());
+        Rational[][] matrix = matrix(reactants, products,eleList);
+        Rational[] vector = vector(products, eleList);
+        System.out.println(Arrays.deepToString(matrix));
+        for (Rational i: vector) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        Matrix<Rational> a = new Matrix<Rational>(matrix);
+        Vector<Rational> b = new Vector<Rational>(vector);
+        Vector<Rational> solution = LinSysSolver.solve(a,b);
+        System.out.println("The Balanced equation is:");
+        System.out.println(solution + " 1");
     }
 
-    public static void reactants(String reactants) {
-        List<Compound> reactantList = new ArrayList();
+    public static ArrayList<Compound> reactants(String reactants) {
+        ArrayList<Compound> reactantList = new ArrayList();
         if (reactants.indexOf("+") == -1){
             reactantList.add(compoundBuilder(reactants));
         } else {
@@ -47,10 +57,11 @@ public class MainRunner {
             }
         }
         System.out.println(reactantList);
+        return reactantList;
     }
 
-    public static void products(String products) {
-        List<Compound> productList = new ArrayList();
+    public static ArrayList<Compound> products(String products) {
+        ArrayList<Compound> productList = new ArrayList();
         if (products.indexOf("+") == -1) {
             productList.add(compoundBuilder(products));
         } else {
@@ -70,6 +81,7 @@ public class MainRunner {
             }
         }
         System.out.println(productList);
+        return productList;
     }
 
     public static Compound compoundBuilder(String compound) {
@@ -156,6 +168,80 @@ public class MainRunner {
         }
     return formatted;
     }
+
+    public static Rational[][] matrix(ArrayList<Compound> reactants, ArrayList<Compound> products, Compound eleList) {
+        int numCompounds = reactants.size()+ products.size();
+        Rational[][] matrix = new Rational[eleList.length()][numCompounds-1];
+        for (int i = 0; i < eleList.length(); i++) {
+            for (int j = 0; j < reactants.size(); j++) {
+                if (containsElement(reactants.get(j), eleList.getElement(i))) {
+                    matrix[i][j] = Rational.FACTORY.get(reactants.get(j).getElement(eleList.getElement(i)).getAmount());
+                } else {
+                    matrix[i][j] = Rational.FACTORY.get(0);
+                }
+            }
+        }
+        for (int k = 0; k < eleList.length(); k++){
+            for (int l = reactants.size(); l < numCompounds-1; l++) {
+                if (containsElement(products.get(l-reactants.size()), eleList.getElement(k))) {
+                    matrix[k][l] = Rational.FACTORY.get(-(products.get(l-reactants.size()).getElement(eleList.getElement(k)).getAmount()));
+                } else {
+                    matrix[k][l] = Rational.FACTORY.get(0);
+                }
+            }
+        }
+        return matrix;
+    }
+
+    public static int getMatrix(int[][] matrix, int a) {
+        int count = 0;
+        for (int[] i: matrix) {
+            for (int j: i) {
+                if (count == a) {
+                    return j;
+                }
+                count++;
+            }
+        }
+        return 0;
+    }
+
+    public static int getVector(int[] vector, int a) {
+        int count = 0;
+        for (int i: vector) {
+            if (count == a) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public static Rational[] vector(ArrayList<Compound> products, Compound eleList) {
+        Rational[] vector = new Rational[eleList.length()];
+        for (int i = 0; i < eleList.length(); i++) {
+            Element searchElement = eleList.getElement(i);
+            Compound lastCompoundInEquation = products.get(products.size()-1);
+            if (containsElement(lastCompoundInEquation, searchElement)) {
+                vector[i] = Rational.FACTORY.get(lastCompoundInEquation.getElement(searchElement).getAmount());
+            } else {
+                vector[i] =Rational.FACTORY.get(0);
+            }
+        }
+        return vector;
+    }
+
+    public static Compound eleList(ArrayList<Compound> a) {
+        Compound eles = new Compound();
+        for (Compound c : a) {
+            for (int i = 0; i < c.length(); i++) {
+                if (!containsElement(eles, c.getElement(i))) {
+                    eles.addElement(c.getElement(i));
+                }
+            }
+        }
+        return eles;
+    }
+
     /**
     public static void products(String productNumber){
         for (int i = 0; i < productNumber; i++) {
@@ -230,6 +316,21 @@ public class MainRunner {
 
      }
     **/
+
+    public static boolean containsElement(Compound a, Element b){
+        for (int i = 0; i < a.length(); i++) {
+            if (isSameElement(a.getElement(i), b)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static boolean isSameElement(Element a, Element b) {
+        if (a.getName().equals(b.getName())) {
+            return true;
+        }
+        return false;
+    }
 
     public static boolean isInteger(String s) {
         boolean isValidInteger = false;

@@ -26,6 +26,18 @@ public class Compound {
         return elements.get(idx);
     }
 
+    public Element getElement(Element e) {
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getName().equals(e.getName())) {
+                return elements.get(i);
+            }
+        }
+        return new Element(null, 0);
+    }
+    public int length() {
+        return elements.size();
+    }
+
     @Override
     public String toString() {
         return elements.toString();
