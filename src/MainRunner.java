@@ -3,6 +3,7 @@ import java.util.*;
 
 import org.jlinalg.LinSysSolver;
 import org.jlinalg.Matrix;
+import org.jlinalg.RingElement;
 import org.jlinalg.Vector;
 import org.jlinalg.rational.Rational;
 
@@ -18,13 +19,19 @@ public class MainRunner {
     public static void main(String args[]) {
         Scanner input = new Scanner(System.in);
         System.out.println("Type in the Reactants");
-        ArrayList<Compound> reactants = reactants(input.nextLine());
+        String inputReactants = input.nextLine();
+        ArrayList<Compound> reactants = reactants(inputReactants);
         Compound eleList = eleList(reactants);
         System.out.println("Type in the Products");
-        ArrayList<Compound> products = products(input.nextLine());
+        String inputProducts = input.nextLine();
+        ArrayList<Compound> products = products(inputProducts);
+        String[] compounds = CompoundFormatter(inputReactants, inputProducts, reactants.size(), products.size());
+        for (String s : compounds) {
+            System.out.print(s + " ");
+        }
         Rational[][] matrix = matrix(reactants, products,eleList);
         Rational[] vector = vector(products, eleList);
-        System.out.println(Arrays.deepToString(matrix));
+        //System.out.println(Arrays.deepToString(matrix));
         for (Rational i: vector) {
             System.out.print(i + " ");
         }
@@ -32,22 +39,46 @@ public class MainRunner {
         Matrix<Rational> a = new Matrix<Rational>(matrix);
         Vector<Rational> b = new Vector<Rational>(vector);
         Vector<Rational> solution = LinSysSolver.solve(a,b);
-        System.out.println("The Balanced equation is:");
-        System.out.println(solution + " 1");
+        System.out.print("The Balanced equation is: ");
+        Rational[] printSol = solutionFormatter(solution);
+        int count = 0;
+        for (String s : compounds) {
+            if (!printSol[count].toString().equals("1")) {
+                System.out.print(printSol[count].toString() + spaceFormatter(s) + " ");
+            } else {
+                System.out.print(spaceFormatter(s) + " ");
+            }
+                if (count == reactants.size()-1) {
+                    System.out.print("= ");
+                } else if (count != compounds.length-1) {
+                    System.out.print("+ ");
+                }
+                count++;
+            }
+            /**
+        System.out.print("= ");
+        int count1 = reactants.size();
+        for (Compound v: products) {
+                System.out.print(printSol[count1].toString() + v + " ");
+                count1++;
+            }
+        System.out.println();
+        for (int j = 0; j < printSol.length; j++) {
+            System.out.print(printSol[j] + " ");
+        }
+             **/
     }
 
     public static ArrayList<Compound> reactants(String reactants) {
         ArrayList<Compound> reactantList = new ArrayList();
         if (reactants.indexOf("+") == -1){
             reactantList.add(compoundBuilder(reactants));
+
         } else {
             int i = 0;
             while (i < reactants.length()){
                 if (reactants.substring(i).indexOf("+") != -1) {
                     int j = reactants.indexOf("+", i);
-                    if (j == -1) {
-                        throw new IllegalArgumentException("j is negative one");
-                    }
                     reactantList.add(compoundBuilder(reactants.substring(i, j)));
                     i += reactants.substring(i).indexOf("+") + 1;
                 } else {
@@ -56,7 +87,7 @@ public class MainRunner {
                 }
             }
         }
-        System.out.println(reactantList);
+        //System.out.println(reactantList);
         return reactantList;
     }
 
@@ -80,17 +111,12 @@ public class MainRunner {
                 }
             }
         }
-        System.out.println(productList);
+        //System.out.println(productList);
         return productList;
     }
 
     public static Compound compoundBuilder(String compound) {
-        while (compound.substring(0,1).equals(" ")) {
-            compound = compound.substring(1);
-        }
-        while (compound.substring(compound.length()-1).equals(" ")) {
-            compound = compound.substring(0, compound.length()-1);
-        }
+        compound = spaceFormatter(compound);
         if (compound.indexOf("(") > -1) {
             compound = paraFormatter(compound);
         }
@@ -193,29 +219,6 @@ public class MainRunner {
         return matrix;
     }
 
-    public static int getMatrix(int[][] matrix, int a) {
-        int count = 0;
-        for (int[] i: matrix) {
-            for (int j: i) {
-                if (count == a) {
-                    return j;
-                }
-                count++;
-            }
-        }
-        return 0;
-    }
-
-    public static int getVector(int[] vector, int a) {
-        int count = 0;
-        for (int i: vector) {
-            if (count == a) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
     public static Rational[] vector(ArrayList<Compound> products, Compound eleList) {
         Rational[] vector = new Rational[eleList.length()];
         for (int i = 0; i < eleList.length(); i++) {
@@ -242,80 +245,76 @@ public class MainRunner {
         return eles;
     }
 
-    /**
-    public static void products(String productNumber){
-        for (int i = 0; i < productNumber; i++) {
-            if (i == 0) {
-                Compound product1 = compoundGenerator(input);
-                i++;
-            } else if (i == 1) {
-                Compound product2 = compoundGenerator(input);
-                i++;
-            } else if (i == 2) {
-                Compound product3 = compoundGenerator(input);
-                i++;
-            } else if (i == 3) {
-                Compound product4 = compoundGenerator(input);
-                i++;
-            } else if (i == 4) {
-                Compound product5 = compoundGenerator(input);
-                i++;
-            } else {
-                System.out.println("I'm broken! Fix me!");
+    public static Rational[] solutionFormatter(Vector<Rational> solution) {
+        int length = solution.length();
+        Rational[] a = new Rational[length+1];
+        for (int i = 0; i < solution.length(); i++) {
+            a[i] = solution.getEntry(i+1);
+        }
+        Rational r1;
+        r1 = Rational.FACTORY.get(1);
+        a[length] = r1;
+        for (int j = 1; j < a.length; j++) {
+            if (!a[j].getDenominator().equals(r1.getDenominator())) {
+                Rational multi = Rational.FACTORY.get(a[j].getDenominator().intValue());
+                for (int k = 0; k < a.length; k++) {
+                    a[k] = a[k].multiply(multi);
+                }
             }
         }
+        return a;
     }
-    public static Compound compoundGenerator(Scanner input) {
-        System.out.println("What is the compound's name?");
-        String CompoundName = input.next();
-        System.out.println("How many elements are in the compound?");
-        int elementNumber = input.nextInt();
-        Element element1 = new Element(null, -1);
-        Element element2 = new Element(null, -1);
-        Element element3 = new Element(null, -1);
-        Element element4 = new Element(null, -1);
-        Element element5 = new Element(null, -1);
-        for (int i = 0; i <= elementNumber; i++) {
-            System.out.print("What is the element's name?");
-            String tempElementName = input.next();
-            System.out.print("How many are in the compound?");
-            int tempElementAmount = input.nextInt();
-            if (i == 0) {
-                element1.setName(tempElementName);
-                element1.setAmount(tempElementAmount);
-                i++;
-            } else if (i == 1) {
-                element2.setName(tempElementName);
-                element2.setAmount(tempElementAmount);
-                i++;
-            } else if (i == 2) {
-                element3.setName(tempElementName);
-                element3.setAmount(tempElementAmount);
-                i++;
-            } else if (i == 3) {
-                element4.setName(tempElementName);
-                element4.setAmount(tempElementAmount);
-                i++;
-            } else if (i == 4) {
-                element5.setName(tempElementName);
-                element5.setAmount(tempElementAmount);
-                i++;
-            } else {
-                System.out.println("Too many elements!");
+
+    public static String spaceFormatter(String a) {
+        while (a.substring(0,1).equals(" ")) {
+            a = a.substring(1);
+        }
+        while (a.substring(a.length()-1).equals(" ")) {
+            a = a.substring(0, a.length()-1);
+        }
+        return a;
+    }
+
+    public static String[] CompoundFormatter(String reactants, String products, int numR, int numP) {
+        String[] formatted = new String[numR+numP];
+        if (reactants.indexOf("+") == -1) {
+            formatted[0] = reactants;
+        } else {
+            int i = 0;
+            int k = 0;
+            while (i < reactants.length()){
+                if (reactants.substring(i).indexOf("+") != -1) {
+                    int j = reactants.indexOf("+", i);
+                    formatted[k] = spaceFormatter(reactants.substring(i,j));
+                    i += reactants.substring(i).indexOf("+") + 1;
+                    k++;
+                } else {
+                    spaceFormatter(formatted[k] = reactants.substring(i));
+                    i = reactants.length();
+                    k++;
+                }
             }
         }
-        if (elementNumber == 2) {
-            return new Compound(CompoundName, element1, element2);
-        } else if (elementNumber == 3) {
-            return new Compound(CompoundName, element1,element2,element3);
-        } else if (elementNumber == 4) {
-            return new Compound(CompoundName, element1, element2, element3, element4);
-        } else if (elementNumber == 5) {
-            return new Compound(CompoundName, element1, element2, element3, element4, element5);
-        } else return null;
-
-     }
-    **/
+        if (products.indexOf("+") == -1) {
+            formatted[0] = products;
+        } else {
+            int h = 0;
+            int g = numR;
+            while (h < products.length()){
+                if (products.substring(h).indexOf("+") != -1) {
+                    int f = products.indexOf("+", h);
+                    formatted[g] = spaceFormatter(products.substring(h,f));
+                    h += products.substring(h).indexOf("+") + 1;
+                    g++;
+                } else {
+                    formatted[g] = spaceFormatter(products.substring(h));
+                    h = products.length();
+                    g++;
+                }
+            }
+        }
+        return formatted;
+    }
 
     public static boolean containsElement(Compound a, Element b){
         for (int i = 0; i < a.length(); i++) {

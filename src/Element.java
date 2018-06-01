@@ -28,6 +28,6 @@ public class Element {
 
     @Override
     public String toString() {
-        return "name: " + name + "| amount: " + amount;
+        return name+amount;
     }
 }
