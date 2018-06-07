@@ -31,16 +31,20 @@ public class MainRunner {
         }
         Rational[][] matrix = matrix(reactants, products,eleList);
         Rational[] vector = vector(products, eleList);
-        //System.out.println(Arrays.deepToString(matrix));
+        /**System.out.println(Arrays.deepToString(matrix));
         for (Rational i: vector) {
             System.out.print(i + " ");
         }
+         **/
         System.out.println();
         Matrix<Rational> a = new Matrix<Rational>(matrix);
         Vector<Rational> b = new Vector<Rational>(vector);
         Vector<Rational> solution = LinSysSolver.solve(a,b);
         System.out.print("The Balanced equation is: ");
-        Rational[] printSol = solutionFormatter(solution);
+        if (solution == null) {
+            throw new IllegalArgumentException("solution is null");
+        }
+            Rational[] printSol = solutionFormatter(solution);
         int count = 0;
         for (String s : compounds) {
             if (!printSol[count].toString().equals("1")) {
@@ -266,6 +270,9 @@ public class MainRunner {
     }
 
     public static String spaceFormatter(String a) {
+        if (a.isEmpty()) {
+            return a;
+        }
         while (a.substring(0,1).equals(" ")) {
             a = a.substring(1);
         }
