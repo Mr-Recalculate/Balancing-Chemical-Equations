@@ -8,8 +8,8 @@ This program will probably break if you input a compound with double digits of o
 
 In my program, the user inputs a full chemical equation and my program prints out the balanced chemical equation which is just the input equation with integer coefficients added that make each side of the equation have the same number of each atom. E.g:
 
-Input equation: K + H2O = KOH + H2
-Output equation: 2K + 2H2O = 2KOH + H2
+Input equation: 	K + H2O = KOH + H2
+Output equation: 	2K + 2H2O = 2KOH + H2
 
 The above equations represent what happens when pure potassium is dropped in water: Potassium atoms take one oxygen and one hydrogen atom from water molecules to form potassium hydroxide- the remaining hydrogen atoms bond together to form hydrogen gas.
 With the guess and check method, you have to plug in random numbers for the coefficients until you stumbled across the correct answer. Using an algebraic method, you assign a variable to each coefficient and create an equation for each element in the equation:
