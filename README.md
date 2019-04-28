@@ -19,4 +19,4 @@ With the guess and check method, you have to plug in random numbers for the coef
 	H: 2y = 2z + u
 	O: y =z
 	
-Then it’s just a matter of solving a system of equations for each variable. I then learned that this is done in code with a bunch Matrix math. Now, I was taking pre-calculus at this point, so Linear Algebra was thoroughly over my head. I worked around this problem by figuring out how to import code libraries to do the Matrix Math for me.
+Then it’s just a matter of solving a system of equations for each variable. That LinAlg is done by an imported library.
